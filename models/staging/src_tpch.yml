@@ -8,3 +8,8 @@ sources:
       - name: orders
       - name: lineitem
       - name: part
+      - name: customer
+      - name: supplier
+      - name: region
+      - name: nation
+      - name: partsupp
