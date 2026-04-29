@@ -6,5 +6,6 @@ select
     p_mfgr as manufacturer,
     p_type as part_type,
     p_size as size,
+    p_brand as brand,
     p_retailprice as retail_price
 from {{ source('tpch_source', 'part') }}
