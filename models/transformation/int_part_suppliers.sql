@@ -10,13 +10,13 @@ part_supp as (
 
 select
     ps.partsupp_key,
-    p.part_name,
-    p.part_type,
-    p.brand,
+    p.p_name,
+    p.p_type,
+    p.p_brand,
     s.supplier_name,
     ps.available_quantity,
     ps.supply_cost,
     (ps.available_quantity * ps.supply_cost) as total_stock_value
 from part_supp ps
-join parts p on ps.part_id = p.part_id
+join parts p on ps.part_id = p.p_partkey
 join suppliers s on ps.supplier_id = s.supplier_id

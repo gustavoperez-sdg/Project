@@ -5,5 +5,6 @@ select
     nation_name as country,
     region_name as continent,
     market_segment,
+    account_balance,
     phone_number
 from {{ ref('int_customers') }}

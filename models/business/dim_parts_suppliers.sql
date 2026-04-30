@@ -1,8 +1,8 @@
 select
     partsupp_key,
-    part_name,
-    part_type,
-    brand,
+    p_name as name,
+    p_type as type,
+    p_brand as brand,
     supplier_name,
     available_quantity,
     supply_cost,
