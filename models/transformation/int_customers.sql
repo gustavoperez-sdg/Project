@@ -14,5 +14,6 @@ select
     c.phone_number,
     c.market_segment,
     c.account_balance
+    
 from customers c
 join geography g on c.nation_id = g.nation_id

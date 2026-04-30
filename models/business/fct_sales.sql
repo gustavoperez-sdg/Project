@@ -7,9 +7,8 @@ select
     order_date,
     order_status,
     quantity,
-    item_subtotal as net_sales_amount, -- Ingreso sin impuestos
-    item_total_price as gross_sales_amount, -- Ingreso con impuestos
+    item_subtotal as net_sales_amount,
+    item_total_price as gross_sales_amount,
     discount_percentage,
-    -- KPI Adicional: Margen estimado si se une con costo (opcional)
-    (item_subtotal * 0.20) as estimated_profit -- Ejemplo de lógica de negocio
+    (item_subtotal * 0.20) as estimated_profit -- Ejemplo de potencial columna de negocio que generamos nosotros
 from {{ ref('int_order_items') }}
