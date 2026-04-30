@@ -1,10 +1,3 @@
-{{ config(materialized='table') }}
-
 select
-    p_partkey as part_id,
-    p_name as part_name,
-    p_mfgr as manufacturer,
-    p_type as part_type,
-    p_size as size,
-    p_retailprice as retail_price
+    {{ stage_columns(source('tpch_source', 'part'), 'p') }}
 from {{ source('tpch_source', 'part') }}
