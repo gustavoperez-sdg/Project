@@ -1,8 +1,3 @@
-{{ config(
-    materialized='table',
-    schema='business'
-) }}
-
 select
     customer_id,
     customer_name,

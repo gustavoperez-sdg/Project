@@ -1,0 +1,41 @@
+version: 2
+
+models:
+  - name: fct_sales
+    description: "Tabla de hechos principal que contiene todas las transacciones de venta."
+    columns:
+      - name: lineitem_key
+        tests:
+          - unique
+          - not_null
+
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customers')
+                field: customer_id
+
+  - name: dim_customers
+    description: "Dimensión que contiene la información maestra de los clientes."
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+
+      - name: country
+        tests:
+          - accepted_values:
+              # NUEVO FORMATO: 'values' ahora es un argumento explícito
+              arguments:
+                values: ['ALGERIA', 'ARGENTINA', 'BRAZIL', 'CANADA', 'EGYPT', 'ETHIOPIA', 'FRANCE', 'GERMANY', 'INDIA', 'INDONESIA', 'IRAN', 'IRAQ', 'JAPAN', 'JORDAN', 'KENYA', 'MOROCCO', 'MOZAMBIQUE', 'PERU', 'CHINA', 'ROMANIA', 'SAUDI ARABIA', 'VIETNAM', 'RUSSIA', 'UNITED KINGDOM', 'UNITED STATES']
+
+  - name: dim_parts_suppliers
+    description: "Dimensión que consolida la información de productos y sus proveedores."
+    columns:
+      - name: partsupp_key
+        tests:
+          - unique
+          - not_null

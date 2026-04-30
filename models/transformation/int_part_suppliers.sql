@@ -1,5 +1,3 @@
-{{ config(materialized='view') }}
-
 with parts as (
     select * from {{ ref('stg_tpch_part') }}
 ),

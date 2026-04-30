@@ -1,8 +1,3 @@
-{{ config(
-    materialized='table',
-    schema='business'
-) }}
-
 select
     lineitem_key,
     order_id,

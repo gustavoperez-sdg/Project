@@ -1,5 +1,3 @@
-{{ config(materialized='table') }}
-
 select
     p_partkey as part_id,
     p_name as part_name,

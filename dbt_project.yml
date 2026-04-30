@@ -1,8 +1,5 @@
 
-# Name your project! Project names should contain only lowercase characters
-# and underscores. A good package name should reflect your organization's
-# name or the intended use of these models
-name: 'my_new_project'
+name: 'Project_DBT_intermediate'
 version: '1.0.0'
 config-version: 2
 
@@ -19,8 +16,8 @@ seed-paths: ["seeds"]
 macro-paths: ["macros"]
 snapshot-paths: ["snapshots"]
 
-target-path: "target"  # directory which will store compiled SQL files
-clean-targets:         # directories to be removed by `dbt clean`
+target-path: "target" 
+clean-targets:        
   - "target"
   - "dbt_packages"
 
@@ -35,8 +32,24 @@ clean-targets:         # directories to be removed by `dbt clean`
 # continue to be built as views. These settings can be overridden in the individual model files
 # using the `{{ config(...) }}` macro.
 
+
+
+# Esto también se puede editar dentro del notebook mediante {{ config(materialized='table') }} o {{ config(materialized='view') }}
 models:
-  my_new_project:
-    # Applies to all files under models/example/
-    example:
+  Project_DBT_intermediate:
+    
+    #1. Capa de Staging: Por defecto todo como tabla
+    staging:
       +materialized: table
+      tpch:
+        stg_tpch_orders:
+          +materialized: incremental # Solo esta será incremental
+
+    #2. Capa de Transformation: Todo como vistas
+    transformation:
+      +materialized: view
+
+    #3. Capa Business: Todo como tablas
+    business:
+      +materialized: table
+      +schema: business

@@ -1,5 +1,3 @@
-{{ config(materialized='view') }}
-
 with nations as (
     select * from {{ ref('stg_tpch_nation') }}
 ),

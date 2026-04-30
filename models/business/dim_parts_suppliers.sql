@@ -1,8 +1,3 @@
-{{ config(
-    materialized='table',
-    schema='business'
-) }}
-
 select
     partsupp_key,
     part_name,
