@@ -14,6 +14,5 @@ select
 from {{ source('tpch_source', 'orders') }}
 
 {% if is_incremental() %}
-  -- Solo trae registros más recientes que el máximo ya existente en el modelo
-  where o_orderdate > (select max(order_date) from {{ this }})
+    where o_orderdate > (select max(order_date) from {{ this }})
 {% endif %}

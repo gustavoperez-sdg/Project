@@ -13,3 +13,29 @@ sources:
       - name: region
       - name: nation
       - name: partsupp
+    
+models:
+  - name: stg_tpch_orders
+    description: "Modelado de órdenes con lógica incremental"
+    columns:
+      - name: order_id
+        description: "Llave primaria de la orden"
+        tests:
+          - unique
+          - not_null
+      - name: total_price
+        tests:
+          - is_positive:
+              config:
+                severity: error
+
+  - name: stg_tpch_lineitem
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+      - name: quantity
+        tests:
+          - is_positive:
+              config:
+                severity: warn
