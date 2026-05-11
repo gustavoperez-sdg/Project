@@ -3,6 +3,14 @@ version: 2
 models:
   - name: fct_sales
     description: "Tabla de hechos principal que contiene todas las transacciones de venta."
+    tests:
+      # Package tests (dbt_utils): Verifica que no perdimos filas en la transformación
+      - dbt_utils.equal_rowcount:
+          arguments:
+            compare_model: ref('stg_tpch_lineitem')
+          config:
+            severity: warn
+
     columns:
       - name: lineitem_key
         tests:
@@ -13,7 +21,7 @@ models:
         tests:
           - not_null
           - relationships:
-              arguments: # Los argumentos SIEMPRE bajo 'arguments'
+              arguments:
                 to: ref('dim_customers')
                 field: customer_id
               config:
@@ -25,6 +33,13 @@ models:
           - is_positive:
               config:
                 severity: error
+          # Package test (dbt expectations): Valida rangos lógicos de precio
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 1000000
+              config:
+                severity: warn
 
   - name: dim_customers
     description: "Dimensión que contiene la información maestra de los clientes."
@@ -33,6 +48,8 @@ models:
         tests:
           - unique
           - not_null
+          # Package test (dbt_utils): Asegura que al menos hay un cliente cargado
+          - dbt_utils.at_least_one
 
       - name: customer_name
         tests:
@@ -43,7 +60,7 @@ models:
       - name: country
         tests:
           - accepted_values:
-              arguments: # Corregimos la deprecación dbt102
+              arguments:
                 values: ['ALGERIA', 'ARGENTINA', 'BRAZIL', 'CANADA', 'EGYPT', 'ETHIOPIA', 'FRANCE', 'GERMANY', 'INDIA', 'INDONESIA', 'IRAN', 'IRAQ', 'JAPAN', 'JORDAN', 'KENYA', 'MOROCCO', 'MOZAMBIQUE', 'PERU', 'CHINA', 'ROMANIA', 'SAUDI ARABIA', 'VIETNAM', 'RUSSIA', 'UNITED KINGDOM', 'UNITED STATES']
               config:
                 severity: warn
