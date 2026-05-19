@@ -1,0 +1,48 @@
+version: 2
+
+models:
+  - name: int_customers
+    description: "Consolidación intermedia de clientes. Limpia caracteres especiales y prepara los campos geográficos para la unión con regiones."
+    config:
+      tags: ["transformation", "crm"]
+    columns:
+      - name: customer_id
+        description: "Llave del cliente (PK)."
+        tests:
+          - not_null
+
+  - name: int_location
+    description: "Modelo denormalizado que une Naciones y Regiones. Proporciona el contexto geográfico completo para las ventas y proveedores."
+    config:
+      tags: ["transformation", "geo"]
+    columns:
+      - name: nation_id
+        description: "Llave de la nación."
+        tests:
+          - not_null
+      - name: region_name
+        description: "Nombre de la región (Ej: AMERICA, EUROPE)."
+
+  - name: int_order_items
+    description: >
+      Unión crítica entre Órdenes y Líneas de Detalle. 
+      Calcula métricas a nivel de línea de transacción antes de la agregación final.
+    config:
+      tags: ["transformation", "sales"]
+    columns:
+      - name: lineitem_key
+        description: "Llave compuesta que identifica la línea de venta."
+        tests:
+          - not_null
+      - name: item_total_price
+        description: "Precio total de la línea (cantidad * precio_unitario)."
+
+  - name: int_part_suppliers
+    description: "Relación entre partes (productos) y sus proveedores disponibles. Filtra proveedores activos."
+    config:
+      tags: ["transformation", "supply_chain"]
+    columns:
+      - name: part_key
+        description: "Referencia al catálogo de piezas."
+      - name: supplier_key
+        description: "Referencia al maestro de proveedores."

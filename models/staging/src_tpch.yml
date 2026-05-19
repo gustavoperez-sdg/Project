@@ -1,15 +1,65 @@
 version: 2
 
+# DOCUMENTACIÓN DE FUENTES
 sources:
   - name: tpch_source
+    description: "Dataset estándar de la industria TPCH-SF1 alojado en Snowflake. Proporciona la base bruta para el análisis de la cadena de suministro."
     database: SNOWFLAKE_SAMPLE_DATA
     schema: TPCH_SF1
+    loader: snowflake_sample_data_loader
     tables:
       - name: orders
+        description: "Tabla cruda de cabeceras de pedidos (O_). Contiene metadatos de transacciones."
       - name: lineitem
+        description: "Tabla cruda de detalle de artículos (L_). Representa la mayor granularidad de la fuente."
       - name: part
+        description: "Catálogo maestro de piezas y componentes."
       - name: customer
+        description: "Registro maestro de clientes originales del sistema fuente."
       - name: supplier
+        description: "Lista de proveedores globales registrados."
       - name: region
+        description: "Clasificación geográfica de alto nivel."
       - name: nation
+        description: "Diccionario de países asociados a clientes y proveedores."
       - name: partsupp
+        description: "Relación costo-disponibilidad entre piezas y sus proveedores."
+
+# DOCUMENTACIÓN DE MODELOS (Trazabilidad y Gobierno de datos)
+models:
+  - name: stg_tpch_orders
+    description: >
+      Modelo de Staging que estandariza los pedidos. 
+      Implementa una estrategia **incremental** para optimizar costos de computación en Snowflake.
+    config:
+      tags: ["staging", "incremental", "finance"]
+    columns:
+      - name: order_id
+        description: "Identificador único de la orden. Mapeado desde O_ORDERKEY."
+        tests:
+          - unique
+          - not_null
+      - name: total_price
+        description: "Monto total de la factura antes de impuestos. Debe validarse contra la suma de sus lineitems."
+        tests:
+          - is_positive:
+              config:
+                severity: error
+
+  - name: stg_tpch_lineitem
+    description: "Desglose técnico de cada artículo solicitado por orden. Utilizado para cálculos de ingresos netos."
+    config:
+      tags: ["staging", "operations"]
+      meta:
+        owner: "@supply_chain_ops"
+    columns:
+      - name: order_id
+        description: "Referencia (FK) a la cabecera de la orden en stg_tpch_orders."
+        tests:
+          - not_null
+      - name: quantity
+        description: "Cantidad física de productos en la línea de detalle."
+        tests:
+          - is_positive:
+              config:
+                severity: warn
