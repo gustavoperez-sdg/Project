@@ -55,3 +55,9 @@ models:
       +grants:
       #Permite garantizar los permisos aun con full refresh
         select: ['PUBLIC', 'ACCOUNTADMIN']
+
+
+tests:
+  Project_DBT_intermediate:
+    +store_failures: true
+    +schema: audit_traces # Guarda los registros que fallan en un esquema específico
