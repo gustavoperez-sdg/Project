@@ -37,13 +37,12 @@ clean-targets:
 # Esto también se puede editar dentro del notebook mediante {{ config(materialized='table') }} o {{ config(materialized='view') }}
 models:
   Project_DBT_intermediate:
-    
+
     #1. Capa de Staging: Por defecto todo como tabla
     staging:
       +materialized: table
-      tpch:
-        stg_tpch_orders:
-          +materialized: incremental # Solo esta será incremental
+      stg_tpch_orders:
+        +materialized: incremental # Solo esta será incremental
 
     #2. Capa de Transformation: Todo como vistas
     transformation:
@@ -53,3 +52,6 @@ models:
     business:
       +materialized: table
       +schema: business
+      +grants:
+      #Permite garantizar los permisos aun con full refresh
+        select: ['PUBLIC', 'ACCOUNTADMIN']

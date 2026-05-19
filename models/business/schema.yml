@@ -2,39 +2,86 @@ version: 2
 
 models:
   - name: fct_sales
-    description: "Tabla de hechos principal que contiene todas las transacciones de venta."
+    description: >
+      **Tabla de Hechos de Ventas (Gold Layer).**
+      Consolida todas las transacciones comerciales a nivel de línea de producto. 
+      Es la fuente oficial para el reporte de ingresos y análisis de rentabilidad.
+    config:
+      tags: ["business", "finance", "certified", "daily"]
+    tests:
+      - dbt_utils.equal_rowcount:
+          arguments:
+            compare_model: ref('stg_tpch_lineitem')
+          config:
+            severity: warn
+            description: "Valida que no haya pérdida de registros desde el origen técnico."
+
     columns:
       - name: lineitem_key
+        description: "Llave subrogada única para cada línea de venta (PK)."
         tests:
           - unique
           - not_null
 
       - name: customer_id
+        description: "Identificador del cliente. Referencia a dim_customers (FK)."
         tests:
           - not_null
           - relationships:
               arguments:
                 to: ref('dim_customers')
                 field: customer_id
+              config:
+                severity: error
+
+      - name: net_sales_amount
+        description: "Ingreso neto final. Fórmula: (Precio * Cantidad) - Descuentos. Excluye impuestos."
+        tests:
+          - is_positive:
+              config:
+                severity: error
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 1000000
+              config:
+                severity: warn
 
   - name: dim_customers
-    description: "Dimensión que contiene la información maestra de los clientes."
+    description: "Información maestra de Clientes. Incluye jerarquías geográficas y segmentos de mercado."
+    config:
+      tags: ["business", "master_data", "certified"]
     columns:
       - name: customer_id
+        description: "Clave única del cliente."
         tests:
           - unique
           - not_null
+          - dbt_utils.at_least_one
+
+      - name: customer_name
+        description: "Nombre del cliente registrado."
+        tests:
+          - is_not_empty:
+              config:
+                severity: warn
 
       - name: country
+        description: "País de residencia. Validado contra la lista oficial de 25 regiones de operación."
         tests:
           - accepted_values:
               arguments:
                 values: ['ALGERIA', 'ARGENTINA', 'BRAZIL', 'CANADA', 'EGYPT', 'ETHIOPIA', 'FRANCE', 'GERMANY', 'INDIA', 'INDONESIA', 'IRAN', 'IRAQ', 'JAPAN', 'JORDAN', 'KENYA', 'MOROCCO', 'MOZAMBIQUE', 'PERU', 'CHINA', 'ROMANIA', 'SAUDI ARABIA', 'VIETNAM', 'RUSSIA', 'UNITED KINGDOM', 'UNITED STATES']
+              config:
+                severity: warn
 
   - name: dim_parts_suppliers
-    description: "Dimensión que consolida la información de productos y sus proveedores."
+    description: "Catálogo unificado de Partes y Proveedores. Cruza la disponibilidad de stock con datos del fabricante."
+    config:
+      tags: ["business", "supply_chain"]
     columns:
       - name: partsupp_key
+        description: "Llave compuesta que identifica la relación única Parte-Proveedor."
         tests:
           - unique
           - not_null
