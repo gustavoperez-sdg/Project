@@ -16,7 +16,7 @@ models:
     config:
       tags: ["transformation", "geo"]
     columns:
-      - name: nation_key
+      - name: nation_id
         description: "Llave de la nación."
         tests:
           - not_null
@@ -30,7 +30,7 @@ models:
     config:
       tags: ["transformation", "sales"]
     columns:
-      - name: order_item_key
+      - name: lineitem_key
         description: "Llave compuesta que identifica la línea de venta."
         tests:
           - not_null
