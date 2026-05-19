@@ -1,4 +1,4 @@
---- Si el precio de venta es menor al de coste de obtenerlo, el negocio perdería dinero o hay un error con la carga de los datos
+--- Si el precio de venta es menor al de coste de obtenerlo
 {{ config(
     severity = 'warn',
     store_failures = true
